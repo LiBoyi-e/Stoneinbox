@@ -108,4 +108,8 @@ public class BodeModel {
     public boolean isEmptyInBox(int i){
         return boxes[i].get() == BoxState.EMPTY;
     }
+
+     ReadOnlyObjectWrapper<BoxState>[] getBoxes() {
+        return boxes;
+    }
 }

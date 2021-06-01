@@ -178,9 +178,17 @@
                 <version>${jacoco.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/*Controller.*</exclude>
+                        <exclude>**/*Controller*.*</exclude>
+                        <exclude>**/HighScoreController.*</exclude>
+                        <exclude>**/OpeningController.*</exclude>
                         <exclude>**/Main.*</exclude>
-                        <exclude>**/RollingCubesApplication.*</exclude>
+                        <exclude>**/*RollingCubesApplication*.*</exclude>
+                        <exclude>**/ControllerHelper.*</exclude>
+                        <exclude>**/*GameResult*.*</exclude>
+                        <exclude>**/*JpaInitializer*.*</exclude>
+                        <exclude>**/*PersistenceModule*.*</exclude>
+                        <exclude>**/*GenericJpaDao*.*</exclude>
+                        <exclude>**/*Stopwatch*.*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

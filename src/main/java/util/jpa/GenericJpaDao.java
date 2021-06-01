@@ -30,13 +30,6 @@ public abstract class GenericJpaDao<T> {
     }
 
     /**
-     * {@return the underlying {@link EntityManager} instance}
-     */
-    public EntityManager getEntityManager() {
-        return entityManager;
-    }
-
-    /**
      * Sets the underlying {@link EntityManager} instance.
      *
      * @param entityManager the underlying {@link EntityManager} instance
@@ -54,49 +47,6 @@ public abstract class GenericJpaDao<T> {
     @Transactional
     public void persist(T entity) {
         entityManager.persist(entity);
-    }
-
-    /**
-     * Returns the entity instance with the specified primary key from the
-     * database. The method returns an empty {@link Optional} object when
-     * the instance does not exists.
-     *
-     * @param primaryKey the primary key to look for
-     * @return an {@link Optional} object wrapping the entity instance with
-     * the specified primary key
-     */
-    @Transactional
-    public Optional<T> find(Object primaryKey) {
-        return Optional.ofNullable(entityManager.find(entityClass, primaryKey));
-    }
-
-    /**
-     * {@return the list of all instances of the entity class from the database}
-     */
-    @Transactional
-    public List<T> findAll() {
-        TypedQuery<T> typedQuery = entityManager.createQuery("FROM " + entityClass.getSimpleName(), entityClass);
-        return typedQuery.getResultList();
-    }
-
-    /**
-     * Removes the specified entity instance from the database.
-     *
-     * @param entity the entity instance to be removed from the database
-     */
-    @Transactional
-    public void remove(T entity) {
-        entityManager.remove(entity);
-    }
-
-    /**
-     * Updates the specified entity instance in the database.
-     *
-     * @param entity the entity instance to be updated in the database
-     */
-    @Transactional
-    public void update(T entity) {
-        entityManager.merge(entity);
     }
 
 }
