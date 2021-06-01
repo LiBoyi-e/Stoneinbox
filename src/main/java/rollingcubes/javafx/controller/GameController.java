@@ -31,7 +31,6 @@ import rollingcubes.results.GameResult;
 import rollingcubes.results.GameResultDao;
 import rollingcubes.state.BodeModel;
 import rollingcubes.state.BoxState;
-import rollingcubes.state.RollingCubesState;
 import util.javafx.ControllerHelper;
 import util.javafx.Stopwatch;
 
@@ -64,7 +63,7 @@ public class GameController {
     @Inject
     private GameResultDao gameResultDao;
 
-    private RollingCubesState gameState;
+
 
     private Stopwatch stopwatch = new Stopwatch();
 
@@ -113,7 +112,7 @@ public class GameController {
     }
 
     private void resetGame() {
-        gameState = new RollingCubesState();
+
         model = new BodeModel(playerAName, playerBName);
         havePlayerWin = false;
         bindGameStateToUI();
