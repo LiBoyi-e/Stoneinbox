@@ -44,8 +44,6 @@ public class GameController {
     @FXML
     private Label messageLabel;
 
-    @FXML
-    private GridPane gameBoard;
 
     @FXML
     private HBox board;
@@ -72,7 +70,6 @@ public class GameController {
 
     private Stopwatch stopwatch = new Stopwatch();
 
-    private String playerName;
 
     private IntegerProperty steps = new SimpleIntegerProperty();
 
@@ -152,7 +149,7 @@ public class GameController {
 
         this.nextLabel.textProperty().bind(model.nextPlayerProperty());
         model.winnerProperty().addListener(this::handleWeHaveAWinner);
-        gameState.solvedProperty().addListener(this::handleSolved);
+
     }
 
     public void handleBoxClicked(MouseEvent mouseEvent) {
@@ -193,6 +190,7 @@ public class GameController {
     public void takeAction(int[] positions) {
         try {
             model.takeAction(positions);
+            steps.set(steps.get() + 1);
         } catch (Exception e) {
             Logger.info(e.getMessage());
             new Alert(Alert.AlertType.INFORMATION, e.getMessage()).show();
@@ -229,16 +227,6 @@ public class GameController {
     }
 
 
-    private void handleSolved(ObservableValue<? extends Boolean> observableValue, boolean oldValue, boolean newValue) {
-        if (newValue) {
-            Logger.info("Player {} has solved the game in {} steps", playerName, steps.get());
-            stopwatch.stop();
-            messageLabel.setText(String.format("Congratulations, %s!", playerName));
-            resetButton.setDisable(true);
-            giveUpFinishButton.setText("Finish");
-        }
-    }
-
     public void handleResetButton(ActionEvent actionEvent) {
         Logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
         Logger.info("Resetting game");
@@ -254,15 +242,24 @@ public class GameController {
             Logger.info("The game has been given up");
         }
         Logger.debug("Saving result");
-        gameResultDao.persist(createGameResult());
+        final GameResult gameResult = createGameResult();
+        String current = model.nextPlayerProperty().get();
+        if (model.getPlayerAName().equals(current)) {
+            current = model.getPlayerBName();
+        } else {
+            current = model.getPlayerAName();
+        }
+        gameResult.setWinner(current);
+        gameResultDao.persist(gameResult);
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         ControllerHelper.loadAndShowFXML(fxmlLoader, "/fxml/highscores.fxml", stage);
     }
 
     private GameResult createGameResult() {
         return GameResult.builder()
-                .player(playerName)
-                .solved(gameState.isSolved())
+                .playerA(model.getPlayerAName())
+                .playerB(model.getPlayerBName())
+                .winner(model.getWinner())
                 .duration(Duration.between(startTime, Instant.now()))
                 .steps(steps.get())
                 .build();

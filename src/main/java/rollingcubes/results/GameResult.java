@@ -27,12 +27,13 @@ public class GameResult {
      * The name of the player.
      */
     @Column(nullable = false)
-    private String player;
+    private String playerA;
 
-    /**
-     * Indicates whether the player has solved the puzzle.
-     */
-    private boolean solved;
+    @Column(nullable = false)
+    private String playerB;
+
+    @Column(nullable = false)
+    private String winner;
 
     /**
      * The number of steps made by the player.
