@@ -3,6 +3,7 @@ package rollingcubes.javafx.controller;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 
 import javafx.animation.Animation;
 import javafx.application.Platform;
@@ -69,7 +70,6 @@ public class GameController {
     private GameResultDao gameResultDao;
 
 
-
     private Stopwatch stopwatch = new Stopwatch();
 
 
@@ -97,6 +97,7 @@ public class GameController {
 
     /**
      * set player a name.
+     *
      * @param playerAName player name
      */
     public void setPlayerAName(String playerAName) {
@@ -106,7 +107,8 @@ public class GameController {
 
     /**
      * set player b name.
-      * @param playerBName the name
+     *
+     * @param playerBName the name
      */
     public void setPlayerBName(String playerBName) {
         this.playerBName = playerBName;
@@ -167,7 +169,8 @@ public class GameController {
 
     /**
      * handle box clicked . call back.
-      * @param mouseEvent the mouse event
+     *
+     * @param mouseEvent the mouse event
      */
     public void handleBoxClicked(MouseEvent mouseEvent) {
         if (!havePlayerWin) {
@@ -182,6 +185,7 @@ public class GameController {
 
     /**
      * handle box drag detected event.
+     *
      * @param event the event
      */
     public void handleBoxDragDetected(MouseEvent event) {
@@ -201,6 +205,7 @@ public class GameController {
 
     /**
      * handle box drag drop event.
+     *
      * @param event the event
      */
     public void handleBoxDragDrop(DragEvent event) {
@@ -213,12 +218,15 @@ public class GameController {
 
     /**
      * take action .
+     *
      * @param positions positions
      */
     public void takeAction(int[] positions) {
         try {
+            final String currentPlayer = model.getNextPlayer();
             model.takeAction(positions);
             steps.set(steps.get() + 1);
+            logger.info("Player {} take action on {}", currentPlayer, Arrays.toString(positions));
         } catch (Exception e) {
             logger.info(e.getMessage());
             new Alert(Alert.AlertType.INFORMATION, e.getMessage()).show();
@@ -227,6 +235,7 @@ public class GameController {
 
     /**
      * handle box drag over event.
+     *
      * @param event the event
      */
     public void handleBoxDragOver(DragEvent event) {
@@ -260,6 +269,7 @@ public class GameController {
 
     /**
      * handle reset button call back.
+     *
      * @param actionEvent the event
      */
     public void handleResetButton(ActionEvent actionEvent) {
@@ -271,6 +281,7 @@ public class GameController {
 
     /**
      * handle give up game .
+     *
      * @param actionEvent the event
      * @throws IOException when io exception
      */
