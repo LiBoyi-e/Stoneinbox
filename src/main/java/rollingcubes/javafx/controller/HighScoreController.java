@@ -24,8 +24,9 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
-import org.tinylog.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rollingcubes.results.GameResult;
 import rollingcubes.results.GameResultDao;
 import util.javafx.ControllerHelper;
@@ -34,7 +35,7 @@ import util.javafx.ControllerHelper;
  * high score controller.
  */
 public class HighScoreController {
-
+    private final Logger logger = LoggerFactory.getLogger(HighScoreController.class);
     @Inject
     private FXMLLoader fxmlLoader;
 
@@ -58,7 +59,7 @@ public class HighScoreController {
 
     @FXML
     private void initialize() {
-        Logger.debug("Loading high scores...");
+        logger.debug("Loading high scores...");
         List<GameResult> highScoreList = gameResultDao.findBest(10);
 
         player.setCellValueFactory(new PropertyValueFactory<>("winner"));
@@ -111,7 +112,7 @@ public class HighScoreController {
      * @throws IOException when io exception
      */
     public void handleRestartButton(ActionEvent actionEvent) throws IOException {
-        Logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
+        logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         ControllerHelper.loadAndShowFXML(fxmlLoader, "/fxml/opening.fxml", stage);
     }

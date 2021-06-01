@@ -9,16 +9,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
 
-import org.tinylog.Logger;
+
 
 /**
  * welcome controller.
  */
 public class OpeningController {
+    private final Logger logger = LoggerFactory.getLogger(OpeningController.class);
     @FXML
     private TextField playerANameTextField;
 
@@ -51,7 +54,7 @@ public class OpeningController {
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
-            Logger.info("The Player A's name is set to {}, The Player B's name is set to {}, loading game scene",
+            logger.info("The Player A's name is set to {}, The Player B's name is set to {}, loading game scene",
                     playerANameTextField.getText(), playerBNameTextField.getText());
         }
     }

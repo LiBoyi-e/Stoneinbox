@@ -13,8 +13,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import org.tinylog.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rollingcubes.results.GameResultDao;
 import util.guice.PersistenceModule;
 
@@ -22,6 +23,7 @@ import util.guice.PersistenceModule;
  * Game Javafx Application.
  */
 public class RollingCubesApplication extends Application {
+    private final Logger logger = LoggerFactory.getLogger(RollingCubesApplication.class);
 
     private GuiceContext context = new GuiceContext(this, () -> List.of(
             new AbstractModule() {
@@ -38,7 +40,7 @@ public class RollingCubesApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Logger.info("Starting application");
+        logger.info("Starting application");
         context.init();
         fxmlLoader.setLocation(getClass().getResource("/fxml/opening.fxml"));
         Parent root = fxmlLoader.load();

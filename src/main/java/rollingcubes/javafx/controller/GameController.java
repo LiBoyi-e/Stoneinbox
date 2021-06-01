@@ -25,8 +25,9 @@ import javafx.stage.Stage;
 
 import javax.inject.Inject;
 
-import org.tinylog.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rollingcubes.results.GameResult;
 import rollingcubes.results.GameResultDao;
 import rollingcubes.state.BoxModel;
@@ -38,6 +39,7 @@ import util.javafx.Stopwatch;
  * Game controller.
  */
 public class GameController {
+    private final Logger logger = LoggerFactory.getLogger(GameController.class);
     @FXML
     private Label nextLabel;
 
@@ -85,7 +87,7 @@ public class GameController {
 
     private void handleWeHaveAWinner(ObservableValue<? extends String> observableValue, String s, String t1) {
         final String playerName = observableValue.getValue();
-        Logger.info("Player {} has solved the game in {} steps", playerName, steps.get());
+        logger.info("Player {} has solved the game in {} steps", playerName, steps.get());
         stopwatch.stop();
         messageLabel.setText(String.format("Congratulations, %s!", playerName));
         resetButton.setDisable(true);
@@ -218,7 +220,7 @@ public class GameController {
             model.takeAction(positions);
             steps.set(steps.get() + 1);
         } catch (Exception e) {
-            Logger.info(e.getMessage());
+            logger.info(e.getMessage());
             new Alert(Alert.AlertType.INFORMATION, e.getMessage()).show();
         }
     }
@@ -261,8 +263,8 @@ public class GameController {
      * @param actionEvent the event
      */
     public void handleResetButton(ActionEvent actionEvent) {
-        Logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
-        Logger.info("Resetting game");
+        logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
+        logger.info("Resetting game");
         stopwatch.stop();
         resetGame();
     }
@@ -274,12 +276,12 @@ public class GameController {
      */
     public void handleGiveUpFinishButton(ActionEvent actionEvent) throws IOException {
         var buttonText = ((Button) actionEvent.getSource()).getText();
-        Logger.debug("{} is pressed", buttonText);
+        logger.debug("{} is pressed", buttonText);
         if (buttonText.equals("Give Up")) {
             stopwatch.stop();
-            Logger.info("The game has been given up");
+            logger.info("The game has been given up");
         }
-        Logger.debug("Saving result");
+        logger.debug("Saving result");
         final GameResult gameResult = createGameResult();
         String current = model.nextPlayerProperty().get();
         if (model.getPlayerAName().equals(current)) {

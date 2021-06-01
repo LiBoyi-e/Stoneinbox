@@ -5,7 +5,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import org.tinylog.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
  * Provides helper methods for controllers.
  */
 public class ControllerHelper {
+    private static final Logger logger = LoggerFactory.getLogger(ControllerHelper.class);
 
     /**
      * load and show fxml.
@@ -23,7 +25,7 @@ public class ControllerHelper {
      * @throws IOException when io exception
      */
     public static void loadAndShowFXML(FXMLLoader fxmlLoader, String resourceName, Stage stage) throws IOException {
-        Logger.trace("Loading FXML resource {}", resourceName);
+        logger.trace("Loading FXML resource {}", resourceName);
         fxmlLoader.setLocation(fxmlLoader.getClass().getResource(resourceName));
         Parent root = fxmlLoader.load();
         stage.setScene(new Scene(root));
