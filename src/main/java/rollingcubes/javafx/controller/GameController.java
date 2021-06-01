@@ -3,7 +3,6 @@ package rollingcubes.javafx.controller;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
 
 import javafx.animation.Animation;
 import javafx.application.Platform;
@@ -12,15 +11,18 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import javax.inject.Inject;
@@ -29,17 +31,24 @@ import org.tinylog.Logger;
 
 import rollingcubes.results.GameResult;
 import rollingcubes.results.GameResultDao;
+import rollingcubes.state.BodeModel;
+import rollingcubes.state.BoxState;
 import rollingcubes.state.RollingCubesState;
 import util.javafx.ControllerHelper;
 import util.javafx.Stopwatch;
 
 public class GameController {
+    @FXML
+    private Label nextLabel;
 
     @FXML
     private Label messageLabel;
 
     @FXML
     private GridPane gameBoard;
+
+    @FXML
+    private HBox board;
 
     @FXML
     private Label stepsLabel;
@@ -69,31 +78,49 @@ public class GameController {
 
     private Instant startTime;
 
-    private List<Image> cubeImages;
+    private String playerAName;
+    private String playerBName;
+    private BodeModel model;
+    private Image emptyImage;
+    private Image stoneImage;
+    private boolean havePlayerWin = false;
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+
+    private void handleWeHaveAWinner(ObservableValue<? extends String> observableValue, String s, String t1) {
+        final String playerName = observableValue.getValue();
+        Logger.info("Player {} has solved the game in {} steps", playerName, steps.get());
+        stopwatch.stop();
+        messageLabel.setText(String.format("Congratulations, %s!", playerName));
+        resetButton.setDisable(true);
+        giveUpFinishButton.setText("Finish");
+        havePlayerWin = true;
+    }
+
+    public void setPlayerAName(String playerAName) {
+        this.playerAName = playerAName;
+        model.playerANameProperty().set(playerAName);
+    }
+
+    public void setPlayerBName(String playerBName) {
+        this.playerBName = playerBName;
+        model.playerBNameProperty().set(playerBName);
     }
 
     @FXML
     public void initialize() {
-        cubeImages = List.of(
-                new Image(getClass().getResource("/images/cube0.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube1.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube2.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube3.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube4.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube5.png").toExternalForm()),
-                new Image(getClass().getResource("/images/cube6.png").toExternalForm())
-        );
+        emptyImage = new Image(getClass().getResource("/images/box_empty.png").toExternalForm());
+        stoneImage = new Image(getClass().getResource("/images/box_stone.png").toExternalForm());
+
         stepsLabel.textProperty().bind(steps.asString());
         stopwatchLabel.textProperty().bind(stopwatch.hhmmssProperty());
-        Platform.runLater(() -> messageLabel.setText(String.format("Good luck, %s!", playerName)));
+        Platform.runLater(() -> messageLabel.setText(String.format("Good luck, %s, %s!", playerAName, playerBName)));
         resetGame();
     }
 
     private void resetGame() {
         gameState = new RollingCubesState();
+        model = new BodeModel(playerAName, playerBName);
+        havePlayerWin = false;
         bindGameStateToUI();
         steps.set(0);
         startTime = Instant.now();
@@ -104,38 +131,103 @@ public class GameController {
     }
 
     private void bindGameStateToUI() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                var imageView = (ImageView) gameBoard.getChildren().get(i * 3 + j);
-                var p = gameState.cubeProperty(i, j);
-                imageView.imageProperty().bind(
-                        new ObjectBinding<Image>() {
-                            {
-                                super.bind(p);
-                            }
-                            @Override
-                            protected Image computeValue() {
-                                return cubeImages.get(p.get().getValue());
-                            }
-                        }
-                );
-            }
+        for (int i = 0; i < board.getChildren().size(); i++) {
+            final ImageView imageView = (ImageView) board.getChildren().get(i);
+            final int location = i;
+            imageView.imageProperty().bind(new ObjectBinding<Image>() {
+                {
+                    bind(model.boxStateReadOnlyObjectWrapper(location));
+                }
+
+                @Override
+                protected Image computeValue() {
+                    if (model.boxStateReadOnlyObjectWrapper(location).getValue() == BoxState.EMPTY) {
+                        return emptyImage;
+                    } else {
+                        return stoneImage;
+                    }
+                }
+            });
         }
+
+        this.nextLabel.textProperty().bind(model.nextPlayerProperty());
+        model.winnerProperty().addListener(this::handleWeHaveAWinner);
         gameState.solvedProperty().addListener(this::handleSolved);
     }
 
-    public void handleClickOnCube(MouseEvent mouseEvent) {
-        var row = GridPane.getRowIndex((Node) mouseEvent.getSource());
-        var col = GridPane.getColumnIndex((Node) mouseEvent.getSource());
-        Logger.debug("Cube ({}, {}) is pressed", row, col);
-        if (gameState.canRollToEmptySpace(row, col)) {
-            steps.set(steps.get() + 1);
-            gameState.rollToEmptySpace(row, col);
-            Logger.debug(gameState);
-        } else {
-            Logger.debug("Invalid move");
+    public void handleBoxClicked(MouseEvent mouseEvent) {
+        if (!havePlayerWin) {
+            final Object source = mouseEvent.getSource();
+            if (source instanceof ImageView) {
+                final ImageView imageView = (ImageView) source;
+                final int index = boxIndex(imageView);
+                takeAction(new int[]{index});
+            }
         }
     }
+
+
+    public void handleBoxDragDetected(MouseEvent event) {
+        final Object source = event.getSource();
+        if (source instanceof ImageView) {
+            final ImageView imageView = (ImageView) source;
+            final Dragboard dragboard = imageView.startDragAndDrop(TransferMode.COPY);
+            final int index = boxIndex(imageView);
+            if (!model.isEmptyInBox(index)) {
+                final ClipboardContent clipboardContent = new ClipboardContent();
+                clipboardContent.putString(Integer.toString(index));
+                dragboard.setContent(clipboardContent);
+            }
+            event.consume();
+        }
+    }
+
+    public void handleBoxDragDrop(DragEvent event) {
+        final Object gestureSource = event.getGestureSource();
+        final Object gestureTarget = event.getGestureTarget();
+        final int i = boxIndex(((ImageView) gestureSource));
+        final int j = boxIndex(((ImageView) gestureTarget));
+        takeAction(new int[]{i, j});
+    }
+
+    public void takeAction(int[] positions) {
+        try {
+            model.takeAction(positions);
+        } catch (Exception e) {
+            Logger.info(e.getMessage());
+            new Alert(Alert.AlertType.INFORMATION, e.getMessage()).show();
+        }
+    }
+
+    public void handleBoxDragOver(DragEvent event) {
+        final Object gestureSource = event.getGestureSource();
+        if (gestureSource != event.getSource()) {
+            final Dragboard dragboard = event.getDragboard();
+            if (dragboard.hasString()) {
+                final String string = dragboard.getString();
+                try {
+                    final int sourceIndex = Integer.parseInt(string);
+                    final Object target = event.getSource();
+                    if (target instanceof ImageView) {
+                        final ImageView imageView = (ImageView) target;
+                        final int currentIndex = boxIndex(imageView);
+                        if (sourceIndex + 1 == currentIndex || sourceIndex == currentIndex + 1) {
+                            if (!model.isEmptyInBox(currentIndex)) {
+                                event.acceptTransferModes(TransferMode.ANY);
+                            }
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                }
+            }
+        }
+        event.consume();
+    }
+
+    private int boxIndex(ImageView imageView) {
+        return board.getChildren().indexOf(imageView);
+    }
+
 
     private void handleSolved(ObservableValue<? extends Boolean> observableValue, boolean oldValue, boolean newValue) {
         if (newValue) {
@@ -147,7 +239,7 @@ public class GameController {
         }
     }
 
-    public void handleResetButton(ActionEvent actionEvent)  {
+    public void handleResetButton(ActionEvent actionEvent) {
         Logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
         Logger.info("Resetting game");
         stopwatch.stop();

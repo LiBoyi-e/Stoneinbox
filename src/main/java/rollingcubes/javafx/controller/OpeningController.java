@@ -36,11 +36,15 @@ public class OpeningController {
         } else {
             fxmlLoader.setLocation(getClass().getResource("/fxml/game.fxml"));
             Parent root = fxmlLoader.load();
-            fxmlLoader.<GameController>getController().setPlayerName(playerNameTextField.getText());
+            final GameController controller = fxmlLoader.<GameController>getController();
+            controller.setPlayerAName(playerANameTextField.getText());
+            controller.setPlayerBName(playerBNameTextField.getText());
+
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
-            Logger.info("The user's name is set to {}, loading game scene", playerNameTextField.getText()); // TODO
+            Logger.info("The Player A's name is set to {}, The Player B's name is set to {}, loading game scene",
+                    playerANameTextField.getText(), playerBNameTextField.getText());
         }
     }
 
