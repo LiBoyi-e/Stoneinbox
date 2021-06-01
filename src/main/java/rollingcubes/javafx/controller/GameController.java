@@ -307,10 +307,11 @@ public class GameController {
     }
 
     private GameResult createGameResult() {
+        String current = model.nextPlayerProperty().get();
         return GameResult.builder()
                 .playerA(model.getPlayerAName())
                 .playerB(model.getPlayerBName())
-                .winner(model.getWinner())
+                .winner(current)
                 .duration(Duration.between(startTime, Instant.now()))
                 .steps(steps.get())
                 .build();

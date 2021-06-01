@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rollingcubes.javafx.Main;
 
 import java.io.IOException;
 
@@ -26,7 +27,7 @@ public class ControllerHelper {
      */
     public static void loadAndShowFXML(FXMLLoader fxmlLoader, String resourceName, Stage stage) throws IOException {
         logger.trace("Loading FXML resource {}", resourceName);
-        fxmlLoader.setLocation(fxmlLoader.getClass().getResource(resourceName));
+        fxmlLoader.setLocation(Main.class.getResource(resourceName));
         Parent root = fxmlLoader.load();
         stage.setScene(new Scene(root));
         stage.show();
