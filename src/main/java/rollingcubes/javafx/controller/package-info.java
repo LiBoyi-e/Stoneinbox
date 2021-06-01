@@ -1,4 +1,4 @@
 /**
- * controller package
+ * controller package.
  */
 package rollingcubes.javafx.controller;

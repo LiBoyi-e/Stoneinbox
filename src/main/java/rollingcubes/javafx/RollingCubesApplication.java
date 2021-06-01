@@ -18,6 +18,9 @@ import org.tinylog.Logger;
 import rollingcubes.results.GameResultDao;
 import util.guice.PersistenceModule;
 
+/**
+ * Game Javafx Application.
+ */
 public class RollingCubesApplication extends Application {
 
     private GuiceContext context = new GuiceContext(this, () -> List.of(

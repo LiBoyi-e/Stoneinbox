@@ -6,7 +6,10 @@ import javafx.beans.property.*;
 import java.util.Arrays;
 import java.util.Random;
 
-public class BodeModel {
+/**
+ * represent  box mode.
+ */
+public class BoxModel {
     private ReadOnlyObjectWrapper<BoxState>[] boxes = new ReadOnlyObjectWrapper[15];
     private StringProperty playerAName = new SimpleStringProperty();
     private StringProperty playerBName = new SimpleStringProperty();
@@ -15,7 +18,13 @@ public class BodeModel {
     private StringProperty nextPlayer = new SimpleStringProperty();
     private BooleanProperty isPlayerANext = new SimpleBooleanProperty();
 
-    public BodeModel(String playerAName, String playerBName) {
+    /**
+     * constructor.
+     *
+     * @param playerAName player a name
+     * @param playerBName player b name
+     */
+    public BoxModel(String playerAName, String playerBName) {
         this.playerAName.set(playerAName);
         this.playerBName.set(playerBName);
         shuffleBoxes();
@@ -36,6 +45,11 @@ public class BodeModel {
         boxes[randomIndex].set(BoxState.EMPTY);
     }
 
+    /**
+     * take action.
+     *
+     * @param positions positions
+     */
     public void takeAction(int[] positions) {
         if (positions.length == 0) {
             throw new RuntimeException("no box select");
@@ -65,51 +79,107 @@ public class BodeModel {
         }
     }
 
+    /**
+     * check if have winner.
+     *
+     * @return true if have.
+     */
     public boolean checkIfWeHaveAWinner() {
         return Arrays.stream(boxes).allMatch(w -> w.get() == BoxState.EMPTY);
     }
 
+    /**
+     * get box state at some location.
+     *
+     * @param location the location
+     * @return the box state
+     */
     public ReadOnlyObjectWrapper<BoxState> boxStateReadOnlyObjectWrapper(int location) {
         return boxes[location];
     }
 
+    /**
+     * get winner.
+     *
+     * @return the winner name
+     */
     public String getWinner() {
         return winner.get();
     }
 
+    /**
+     * get winner property.
+     *
+     * @return the property
+     */
     public StringProperty winnerProperty() {
         return winner;
     }
 
+    /**
+     * get next player.
+     *
+     * @return the player name
+     */
     public String getNextPlayer() {
         return nextPlayer.get();
     }
 
+    /**
+     * get next player property.
+     *
+     * @return the property
+     */
     public StringProperty nextPlayerProperty() {
         return nextPlayer;
     }
 
+    /**
+     * get player a name.
+     *
+     * @return the name
+     */
     public String getPlayerAName() {
         return playerAName.get();
     }
 
+    /**
+     * get player a name property.
+     *
+     * @return the property
+     */
     public StringProperty playerANameProperty() {
         return playerAName;
     }
 
+    /**
+     * get player b name.
+     *
+     * @return the name
+     */
     public String getPlayerBName() {
         return playerBName.get();
     }
 
+    /**
+     * get player b name property.
+     *
+     * @return the property
+     */
     public StringProperty playerBNameProperty() {
         return playerBName;
     }
 
-    public boolean isEmptyInBox(int i){
+    /**
+     * check if is empty in box at pos.
+     * @param i the index
+     * @return true if empty
+     */
+    public boolean isEmptyInBox(int i) {
         return boxes[i].get() == BoxState.EMPTY;
     }
 
-     ReadOnlyObjectWrapper<BoxState>[] getBoxes() {
+    ReadOnlyObjectWrapper<BoxState>[] getBoxes() {
         return boxes;
     }
 }

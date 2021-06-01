@@ -33,14 +33,16 @@ public class Stopwatch {
     }
 
     /**
-     * {@return a property to access the number of seconds elapsed}
+     * get seconds property.
+     *
+     * @return a property to access the number of seconds elapsed
      */
     public LongProperty secondsProperty() {
         return seconds;
     }
 
     /**
-     * {@return a property to access the time elapsed in {@code hh:mm:ss} format}
+     * @return a property to access the time elapsed in {@code hh:mm:ss} format
      */
     public StringProperty hhmmssProperty() {
         return hhmmss;
@@ -73,7 +75,7 @@ public class Stopwatch {
     }
 
     /**
-     * {@return the status of the stopwatch}
+     * @return the status of the stopwatch.
      */
     public Animation.Status getStatus() {
         return timeline.getStatus();

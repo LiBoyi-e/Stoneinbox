@@ -1,5 +1,15 @@
 package rollingcubes.state;
 
+/**
+ * represent box state.
+ */
 public enum BoxState {
-    EMPTY, HAVE_STONE
+    /**
+     * represent empty.
+     */
+    EMPTY,
+    /**
+     * represent have stone.
+     */
+    HAVE_STONE
 }

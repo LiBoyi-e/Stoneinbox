@@ -30,6 +30,9 @@ import rollingcubes.results.GameResult;
 import rollingcubes.results.GameResultDao;
 import util.javafx.ControllerHelper;
 
+/**
+ * high score controller.
+ */
 public class HighScoreController {
 
     @Inject
@@ -68,10 +71,10 @@ public class HighScoreController {
                 @Override
                 protected void updateItem(Duration item, boolean empty) {
                     super.updateItem(item, empty);
-                    if(empty) {
+                    if (empty) {
                         setText(null);
                     } else {
-                        setText(DurationFormatUtils.formatDuration(item.toMillis(),"H:mm:ss"));
+                        setText(DurationFormatUtils.formatDuration(item.toMillis(), "H:mm:ss"));
                     }
                 }
             };
@@ -81,10 +84,11 @@ public class HighScoreController {
         created.setCellFactory(column -> {
             TableCell<GameResult, ZonedDateTime> cell = new TableCell<GameResult, ZonedDateTime>() {
                 private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG);
+
                 @Override
                 protected void updateItem(ZonedDateTime item, boolean empty) {
                     super.updateItem(item, empty);
-                    if(empty) {
+                    if (empty) {
                         setText(null);
                     } else {
                         setText(item.format(formatter));
@@ -100,6 +104,12 @@ public class HighScoreController {
         highScoreTable.setItems(observableResult);
     }
 
+    /**
+     * handle restart button callback.
+     *
+     * @param actionEvent the event
+     * @throws IOException when io exception
+     */
     public void handleRestartButton(ActionEvent actionEvent) throws IOException {
         Logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();

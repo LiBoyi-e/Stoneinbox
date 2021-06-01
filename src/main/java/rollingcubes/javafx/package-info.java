@@ -1,4 +1,4 @@
 /**
- * boot strap package
+ * boot strap package.
  */
 package rollingcubes.javafx;

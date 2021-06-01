@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BodeModelTest {
+class BoxModelTest {
 
     @Test
     void takeAction() {
-        final BodeModel model = prepareMode(0);
+        final BoxModel model = prepareMode(0);
         assertThrows(RuntimeException.class, () -> {
             model.takeAction(new int[0]);
         });
@@ -22,7 +22,7 @@ class BodeModelTest {
         assertThrows(RuntimeException.class, () -> {
             model.takeAction(new int[]{0, 1});
         });
-        final BodeModel model1 = prepareMode(2);
+        final BoxModel model1 = prepareMode(2);
         assertThrows(RuntimeException.class, () -> {
             model1.takeAction(new int[]{1, 2});
         });
@@ -36,8 +36,8 @@ class BodeModelTest {
         }
     }
 
-    private BodeModel prepareMode(int index) {
-        final BodeModel model = new BodeModel("a", "b");
+    private BoxModel prepareMode(int index) {
+        final BoxModel model = new BoxModel("a", "b");
         final ReadOnlyObjectWrapper<BoxState>[] boxes = model.getBoxes();
         for (int i = 0; i < boxes.length; i++) {
             boxes[i].set(BoxState.HAVE_STONE);
@@ -46,7 +46,7 @@ class BodeModelTest {
         return model;
     }
 
-    private BodeModel prepareMode() {
+    private BoxModel prepareMode() {
         return prepareMode(0);
     }
 
@@ -56,61 +56,61 @@ class BodeModelTest {
 
     @Test
     void boxStateReadOnlyObjectWrapper() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertEquals(BoxState.EMPTY, model.boxStateReadOnlyObjectWrapper(0).get());
     }
 
     @Test
     void getWinner() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertNull(model.getWinner());
     }
 
     @Test
     void winnerProperty() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertNotNull(model.winnerProperty());
     }
 
     @Test
     void getNextPlayer() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertEquals("a", model.getNextPlayer());
     }
 
     @Test
     void nextPlayerProperty() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertNotNull(model.nextPlayerProperty());
     }
 
     @Test
     void getPlayerAName() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertEquals("a", model.getPlayerAName());
     }
 
     @Test
     void playerANameProperty() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertEquals("a", model.playerANameProperty().get());
     }
 
     @Test
     void getPlayerBName() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertEquals("b", model.getPlayerBName());
     }
 
     @Test
     void playerBNameProperty() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertEquals("b", model.playerBNameProperty().get());
     }
 
     @Test
     void isEmptyInBox() {
-        final BodeModel model = prepareMode();
+        final BoxModel model = prepareMode();
         assertTrue(model.isEmptyInBox(0));
     }
 }

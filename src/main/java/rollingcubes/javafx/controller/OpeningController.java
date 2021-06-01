@@ -15,6 +15,9 @@ import java.io.IOException;
 
 import org.tinylog.Logger;
 
+/**
+ * welcome controller.
+ */
 public class OpeningController {
     @FXML
     private TextField playerANameTextField;
@@ -28,6 +31,11 @@ public class OpeningController {
     @FXML
     private Label errorLabel;
 
+    /**
+     * start action call back.
+     * @param actionEvent the event
+     * @throws IOException io exception
+     */
     public void startAction(ActionEvent actionEvent) throws IOException {
         if (playerANameTextField.getText().isEmpty()) {
             errorLabel.setText("Please enter player A name!");

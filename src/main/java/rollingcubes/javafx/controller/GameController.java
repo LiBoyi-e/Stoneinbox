@@ -29,11 +29,14 @@ import org.tinylog.Logger;
 
 import rollingcubes.results.GameResult;
 import rollingcubes.results.GameResultDao;
-import rollingcubes.state.BodeModel;
+import rollingcubes.state.BoxModel;
 import rollingcubes.state.BoxState;
 import util.javafx.ControllerHelper;
 import util.javafx.Stopwatch;
 
+/**
+ * Game controller.
+ */
 public class GameController {
     @FXML
     private Label nextLabel;
@@ -74,7 +77,7 @@ public class GameController {
 
     private String playerAName;
     private String playerBName;
-    private BodeModel model;
+    private BoxModel model;
     private Image emptyImage;
     private Image stoneImage;
     private boolean havePlayerWin = false;
@@ -90,16 +93,27 @@ public class GameController {
         havePlayerWin = true;
     }
 
+    /**
+     * set player a name.
+     * @param playerAName player name
+     */
     public void setPlayerAName(String playerAName) {
         this.playerAName = playerAName;
         model.playerANameProperty().set(playerAName);
     }
 
+    /**
+     * set player b name.
+      * @param playerBName the name
+     */
     public void setPlayerBName(String playerBName) {
         this.playerBName = playerBName;
         model.playerBNameProperty().set(playerBName);
     }
 
+    /**
+     * initialize the controller.
+     */
     @FXML
     public void initialize() {
         emptyImage = new Image(getClass().getResource("/images/box_empty.png").toExternalForm());
@@ -113,7 +127,7 @@ public class GameController {
 
     private void resetGame() {
 
-        model = new BodeModel(playerAName, playerBName);
+        model = new BoxModel(playerAName, playerBName);
         havePlayerWin = false;
         bindGameStateToUI();
         steps.set(0);
@@ -149,6 +163,10 @@ public class GameController {
 
     }
 
+    /**
+     * handle box clicked . call back.
+      * @param mouseEvent the mouse event
+     */
     public void handleBoxClicked(MouseEvent mouseEvent) {
         if (!havePlayerWin) {
             final Object source = mouseEvent.getSource();
@@ -160,7 +178,10 @@ public class GameController {
         }
     }
 
-
+    /**
+     * handle box drag detected event.
+     * @param event the event
+     */
     public void handleBoxDragDetected(MouseEvent event) {
         final Object source = event.getSource();
         if (source instanceof ImageView) {
@@ -176,6 +197,10 @@ public class GameController {
         }
     }
 
+    /**
+     * handle box drag drop event.
+     * @param event the event
+     */
     public void handleBoxDragDrop(DragEvent event) {
         final Object gestureSource = event.getGestureSource();
         final Object gestureTarget = event.getGestureTarget();
@@ -184,6 +209,10 @@ public class GameController {
         takeAction(new int[]{i, j});
     }
 
+    /**
+     * take action .
+     * @param positions positions
+     */
     public void takeAction(int[] positions) {
         try {
             model.takeAction(positions);
@@ -194,6 +223,10 @@ public class GameController {
         }
     }
 
+    /**
+     * handle box drag over event.
+     * @param event the event
+     */
     public void handleBoxDragOver(DragEvent event) {
         final Object gestureSource = event.getGestureSource();
         if (gestureSource != event.getSource()) {
@@ -223,7 +256,10 @@ public class GameController {
         return board.getChildren().indexOf(imageView);
     }
 
-
+    /**
+     * handle reset button call back.
+     * @param actionEvent the event
+     */
     public void handleResetButton(ActionEvent actionEvent) {
         Logger.debug("{} is pressed", ((Button) actionEvent.getSource()).getText());
         Logger.info("Resetting game");
@@ -231,6 +267,11 @@ public class GameController {
         resetGame();
     }
 
+    /**
+     * handle give up game .
+     * @param actionEvent the event
+     * @throws IOException when io exception
+     */
     public void handleGiveUpFinishButton(ActionEvent actionEvent) throws IOException {
         var buttonText = ((Button) actionEvent.getSource()).getText();
         Logger.debug("{} is pressed", buttonText);
