@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>hu.unideb.inf</groupId>
-    <artifactId>rolling-cubes</artifactId>
+    <artifactId>StoneInBox</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
     <description>Puzzle game implemented in JavaFX based on the Model-View-Controller (MVC) architectural pattern.</description>
@@ -15,14 +15,13 @@
             <organizationUrl>https://inf.unideb.hu/</organizationUrl>
         </developer>
         <developer>
-            <name>Roland Major</name>
-            <email>major.sandor@inf.unideb.hu</email>
+            <name>Li Boyi</name>
+            <email>liboyi201809@163.com</email>
             <organization>Faculty of Informatics, University of Debrecen</organization>
-            <organizationUrl>https://inf.unideb.hu/</organizationUrl>
         </developer>
     </developers>
     <scm>
-        <developerConnection>scm:git:https://github.com/INBPM0420/rolling-cubes.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/LiBoyi-e/Stoneinbox.git</developerConnection>
     </scm>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
