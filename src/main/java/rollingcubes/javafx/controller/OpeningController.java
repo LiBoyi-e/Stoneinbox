@@ -16,19 +16,23 @@ import java.io.IOException;
 import org.tinylog.Logger;
 
 public class OpeningController {
+    @FXML
+    private TextField playerANameTextField;
+
+    @FXML
+    private TextField playerBNameTextField;
 
     @Inject
     private FXMLLoader fxmlLoader;
 
     @FXML
-    private TextField playerNameTextField;
-
-    @FXML
     private Label errorLabel;
 
     public void startAction(ActionEvent actionEvent) throws IOException {
-        if (playerNameTextField.getText().isEmpty()) {
-            errorLabel.setText("Please enter your name!");
+        if (playerANameTextField.getText().isEmpty()) {
+            errorLabel.setText("Please enter player A name!");
+        } else if (playerBNameTextField.getText().isEmpty()) {
+            errorLabel.setText("Please enter player B name!");
         } else {
             fxmlLoader.setLocation(getClass().getResource("/fxml/game.fxml"));
             Parent root = fxmlLoader.load();
