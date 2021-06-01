@@ -294,13 +294,6 @@ public class GameController {
         }
         logger.debug("Saving result");
         final GameResult gameResult = createGameResult();
-        String current = model.nextPlayerProperty().get();
-        if (model.getPlayerAName().equals(current)) {
-            current = model.getPlayerBName();
-        } else {
-            current = model.getPlayerAName();
-        }
-        gameResult.setWinner(current);
         gameResultDao.persist(gameResult);
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         ControllerHelper.loadAndShowFXML(fxmlLoader, "/fxml/highscores.fxml", stage);
