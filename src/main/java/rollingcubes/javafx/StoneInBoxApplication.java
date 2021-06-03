@@ -22,8 +22,8 @@ import util.guice.PersistenceModule;
 /**
  * Game Javafx Application.
  */
-public class RollingCubesApplication extends Application {
-    private final Logger logger = LoggerFactory.getLogger(RollingCubesApplication.class);
+public class StoneInBoxApplication extends Application {
+    private final Logger logger = LoggerFactory.getLogger(StoneInBoxApplication.class);
 
     private GuiceContext context = new GuiceContext(this, () -> List.of(
             new AbstractModule() {

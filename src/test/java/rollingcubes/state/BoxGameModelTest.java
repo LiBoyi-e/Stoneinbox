@@ -5,39 +5,39 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BoxModelTest {
+class BoxGameModelTest {
 
     @Test
     void takeAction() {
-        final BoxModel model = prepareMode(0);
+        final BoxGameModel model = prepareMode(0);
         assertThrows(RuntimeException.class, () -> {
-            model.takeAction(new int[0]);
+            model.takeStoneOutofBox(new int[0]);
         });
         assertThrows(RuntimeException.class, () -> {
-            model.takeAction(new int[]{1, 2, 3});
+            model.takeStoneOutofBox(new int[]{1, 2, 3});
         });
         assertThrows(RuntimeException.class, () -> {
-            model.takeAction(new int[]{2, 4});
+            model.takeStoneOutofBox(new int[]{2, 4});
         });
         assertThrows(RuntimeException.class, () -> {
-            model.takeAction(new int[]{0, 1});
+            model.takeStoneOutofBox(new int[]{0, 1});
         });
-        final BoxModel model1 = prepareMode(2);
+        final BoxGameModel model1 = prepareMode(2);
         assertThrows(RuntimeException.class, () -> {
-            model1.takeAction(new int[]{1, 2});
+            model1.takeStoneOutofBox(new int[]{1, 2});
         });
 
         assertThrows(RuntimeException.class, () -> {
-            model1.takeAction(new int[]{2});
+            model1.takeStoneOutofBox(new int[]{2});
         });
 
         for (int i = 1; i < 15; i++) {
-            model.takeAction(new int[]{i});
+            model.takeStoneOutofBox(new int[]{i});
         }
     }
 
-    private BoxModel prepareMode(int index) {
-        final BoxModel model = new BoxModel("a", "b");
+    private BoxGameModel prepareMode(int index) {
+        final BoxGameModel model = new BoxGameModel("a", "b");
         final ReadOnlyObjectWrapper<BoxState>[] boxes = model.getBoxes();
         for (int i = 0; i < boxes.length; i++) {
             boxes[i].set(BoxState.HAVE_STONE);
@@ -46,7 +46,7 @@ class BoxModelTest {
         return model;
     }
 
-    private BoxModel prepareMode() {
+    private BoxGameModel prepareMode() {
         return prepareMode(0);
     }
 
@@ -56,61 +56,61 @@ class BoxModelTest {
 
     @Test
     void boxStateReadOnlyObjectWrapper() {
-        final BoxModel model = prepareMode();
+        final BoxGameModel model = prepareMode();
         assertEquals(BoxState.EMPTY, model.boxStateReadOnlyObjectWrapper(0).get());
     }
 
     @Test
     void getWinner() {
-        final BoxModel model = prepareMode();
+        final BoxGameModel model = prepareMode();
         assertNull(model.getWinner());
     }
 
     @Test
     void winnerProperty() {
-        final BoxModel model = prepareMode();
+        final BoxGameModel model = prepareMode();
         assertNotNull(model.winnerProperty());
     }
 
     @Test
     void getNextPlayer() {
-        final BoxModel model = prepareMode();
-        assertEquals("a", model.getNextPlayer());
+        final BoxGameModel model = prepareMode();
+        assertEquals("a", model.getCurrentPlayer());
     }
 
     @Test
     void nextPlayerProperty() {
-        final BoxModel model = prepareMode();
-        assertNotNull(model.nextPlayerProperty());
+        final BoxGameModel model = prepareMode();
+        assertNotNull(model.currentPlayerProperty());
     }
 
     @Test
     void getPlayerAName() {
-        final BoxModel model = prepareMode();
+        final BoxGameModel model = prepareMode();
         assertEquals("a", model.getPlayerAName());
     }
 
     @Test
     void playerANameProperty() {
-        final BoxModel model = prepareMode();
+        final BoxGameModel model = prepareMode();
         assertEquals("a", model.playerANameProperty().get());
     }
 
     @Test
     void getPlayerBName() {
-        final BoxModel model = prepareMode();
+        final BoxGameModel model = prepareMode();
         assertEquals("b", model.getPlayerBName());
     }
 
     @Test
     void playerBNameProperty() {
-        final BoxModel model = prepareMode();
+        final BoxGameModel model = prepareMode();
         assertEquals("b", model.playerBNameProperty().get());
     }
 
     @Test
     void isEmptyInBox() {
-        final BoxModel model = prepareMode();
+        final BoxGameModel model = prepareMode();
         assertTrue(model.isEmptyInBox(0));
     }
 }

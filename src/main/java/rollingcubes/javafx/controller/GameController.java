@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rollingcubes.results.GameResult;
 import rollingcubes.results.GameResultDao;
-import rollingcubes.state.BoxModel;
+import rollingcubes.state.BoxGameModel;
 import rollingcubes.state.BoxState;
 import util.javafx.ControllerHelper;
 import util.javafx.Stopwatch;
@@ -79,7 +79,7 @@ public class GameController {
 
     private String playerAName;
     private String playerBName;
-    private BoxModel model;
+    private BoxGameModel model;
     private Image emptyImage;
     private Image stoneImage;
     private boolean havePlayerWin = false;
@@ -131,7 +131,7 @@ public class GameController {
 
     private void resetGame() {
 
-        model = new BoxModel(playerAName, playerBName);
+        model = new BoxGameModel(playerAName, playerBName);
         havePlayerWin = false;
         bindGameStateToUI();
         steps.set(0);
@@ -162,7 +162,7 @@ public class GameController {
             });
         }
 
-        this.nextLabel.textProperty().bind(model.nextPlayerProperty());
+        this.nextLabel.textProperty().bind(model.currentPlayerProperty());
         model.winnerProperty().addListener(this::handleWeHaveAWinner);
 
     }
@@ -177,8 +177,8 @@ public class GameController {
             final Object source = mouseEvent.getSource();
             if (source instanceof ImageView) {
                 final ImageView imageView = (ImageView) source;
-                final int index = boxIndex(imageView);
-                takeAction(new int[]{index});
+                final int index = getBoxIndex(imageView);
+                takeout(new int[]{index});
             }
         }
     }
@@ -192,44 +192,14 @@ public class GameController {
         final Object source = event.getSource();
         if (source instanceof ImageView) {
             final ImageView imageView = (ImageView) source;
-            final Dragboard dragboard = imageView.startDragAndDrop(TransferMode.COPY);
-            final int index = boxIndex(imageView);
+            final int index = getBoxIndex(imageView);
             if (!model.isEmptyInBox(index)) {
+                final Dragboard dragboard = imageView.startDragAndDrop(TransferMode.COPY);
                 final ClipboardContent clipboardContent = new ClipboardContent();
                 clipboardContent.putString(Integer.toString(index));
                 dragboard.setContent(clipboardContent);
             }
             event.consume();
-        }
-    }
-
-    /**
-     * handle box drag drop event.
-     *
-     * @param event the event
-     */
-    public void handleBoxDragDrop(DragEvent event) {
-        final Object gestureSource = event.getGestureSource();
-        final Object gestureTarget = event.getGestureTarget();
-        final int i = boxIndex(((ImageView) gestureSource));
-        final int j = boxIndex(((ImageView) gestureTarget));
-        takeAction(new int[]{i, j});
-    }
-
-    /**
-     * take action .
-     *
-     * @param positions positions
-     */
-    public void takeAction(int[] positions) {
-        try {
-            final String currentPlayer = model.getNextPlayer();
-            model.takeAction(positions);
-            steps.set(steps.get() + 1);
-            logger.info("Player {} take action on {}", currentPlayer, Arrays.toString(positions));
-        } catch (Exception e) {
-            logger.info(e.getMessage());
-            new Alert(Alert.AlertType.INFORMATION, e.getMessage()).show();
         }
     }
 
@@ -246,10 +216,10 @@ public class GameController {
                 final String string = dragboard.getString();
                 try {
                     final int sourceIndex = Integer.parseInt(string);
-                    final Object target = event.getSource();
-                    if (target instanceof ImageView) {
-                        final ImageView imageView = (ImageView) target;
-                        final int currentIndex = boxIndex(imageView);
+                    final Object self = event.getSource();
+                    if (self instanceof ImageView) {
+                        final ImageView imageView = (ImageView) self;
+                        final int currentIndex = getBoxIndex(imageView);
                         if (sourceIndex + 1 == currentIndex || sourceIndex == currentIndex + 1) {
                             if (!model.isEmptyInBox(currentIndex)) {
                                 event.acceptTransferModes(TransferMode.ANY);
@@ -263,7 +233,37 @@ public class GameController {
         event.consume();
     }
 
-    private int boxIndex(ImageView imageView) {
+    /**
+     * handle box drag drop event.
+     *
+     * @param event the event
+     */
+    public void handleBoxDragDrop(DragEvent event) {
+        final Object gestureSource = event.getGestureSource();
+        final Object gestureTarget = event.getGestureTarget();
+        final int i = getBoxIndex(((ImageView) gestureSource));
+        final int j = getBoxIndex(((ImageView) gestureTarget));
+        takeout(new int[]{i, j});
+    }
+
+    /**
+     * take action .
+     *
+     * @param indexes box indexes
+     */
+    public void takeout(int[] indexes) {
+        try {
+            final String currentPlayer = model.getCurrentPlayer();
+            model.takeStoneOutofBox(indexes);
+            steps.set(steps.get() + 1);
+            logger.info("Player {} take action on {}", currentPlayer, Arrays.toString(indexes));
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            new Alert(Alert.AlertType.INFORMATION, e.getMessage()).show();
+        }
+    }
+
+    private int getBoxIndex(ImageView imageView) {
         return board.getChildren().indexOf(imageView);
     }
 
@@ -291,16 +291,18 @@ public class GameController {
         if (buttonText.equals("Give Up")) {
             stopwatch.stop();
             logger.info("The game has been given up");
+        }else {
+            // finish
+            logger.debug("Saving result");
+            final GameResult gameResult = createGameResult();
+            gameResultDao.persist(gameResult);
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            ControllerHelper.loadAndShowFXML(fxmlLoader, "/fxml/highscores.fxml", stage);
         }
-        logger.debug("Saving result");
-        final GameResult gameResult = createGameResult();
-        gameResultDao.persist(gameResult);
-        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-        ControllerHelper.loadAndShowFXML(fxmlLoader, "/fxml/highscores.fxml", stage);
     }
 
     private GameResult createGameResult() {
-        String current = model.nextPlayerProperty().get();
+        String current = model.currentPlayerProperty().get();
         return GameResult.builder()
                 .playerA(model.getPlayerAName())
                 .playerB(model.getPlayerBName())

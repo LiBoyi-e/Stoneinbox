@@ -9,13 +9,13 @@ import java.util.Random;
 /**
  * represent  box mode.
  */
-public class BoxModel {
+public class BoxGameModel {
     private ReadOnlyObjectWrapper<BoxState>[] boxes = new ReadOnlyObjectWrapper[15];
     private StringProperty playerAName = new SimpleStringProperty();
     private StringProperty playerBName = new SimpleStringProperty();
 
     private StringProperty winner = new SimpleStringProperty();
-    private StringProperty nextPlayer = new SimpleStringProperty();
+    private StringProperty currentPlayer = new SimpleStringProperty();
     private BooleanProperty isPlayerANext = new SimpleBooleanProperty();
 
     /**
@@ -24,12 +24,12 @@ public class BoxModel {
      * @param playerAName player a name
      * @param playerBName player b name
      */
-    public BoxModel(String playerAName, String playerBName) {
+    public BoxGameModel(String playerAName, String playerBName) {
         this.playerAName.set(playerAName);
         this.playerBName.set(playerBName);
         shuffleBoxes();
         isPlayerANext.set(true);
-        nextPlayer.bind(new When(isPlayerANext).then(this.playerAName).otherwise(this.playerBName));
+        currentPlayer.bind(new When(isPlayerANext).then(this.playerAName).otherwise(this.playerBName));
 
     }
 
@@ -37,10 +37,10 @@ public class BoxModel {
         for (int i = 0; i < boxes.length; i++) {
             boxes[i] = new ReadOnlyObjectWrapper<>();
         }
-        final Random random = new Random(System.currentTimeMillis());
         for (ReadOnlyObjectWrapper<BoxState> box : boxes) {
             box.set(BoxState.HAVE_STONE);
         }
+        final Random random = new Random(System.currentTimeMillis());
         final int randomIndex = random.nextInt(boxes.length);
         boxes[randomIndex].set(BoxState.EMPTY);
     }
@@ -50,7 +50,7 @@ public class BoxModel {
      *
      * @param positions positions
      */
-    public void takeAction(int[] positions) {
+    public void takeStoneOutofBox(int[] positions) {
         if (positions.length == 0) {
             throw new RuntimeException("no box select");
         } else if (positions.length > 2) {
@@ -58,6 +58,7 @@ public class BoxModel {
         } else {
             Arrays.sort(positions);
             if (positions.length != 1) {
+                //assert length=2
                 if (positions[0] + 1 != positions[1]) {
                     throw new RuntimeException("two box should adjacent");
                 }
@@ -72,7 +73,7 @@ public class BoxModel {
                 boxes[position].set(BoxState.EMPTY);
             }
             if (checkIfWeHaveAWinner()) {
-                winner.set(nextPlayer.get());
+                winner.set(currentPlayer.get());
             } else {
                 isPlayerANext.set(!isPlayerANext.get());
             }
@@ -121,8 +122,8 @@ public class BoxModel {
      *
      * @return the player name
      */
-    public String getNextPlayer() {
-        return nextPlayer.get();
+    public String getCurrentPlayer() {
+        return currentPlayer.get();
     }
 
     /**
@@ -130,8 +131,8 @@ public class BoxModel {
      *
      * @return the property
      */
-    public StringProperty nextPlayerProperty() {
-        return nextPlayer;
+    public StringProperty currentPlayerProperty() {
+        return currentPlayer;
     }
 
     /**

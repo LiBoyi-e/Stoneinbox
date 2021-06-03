@@ -13,7 +13,7 @@ public class Main {
      * @param args not used
      */
     public static void main(String[] args) {
-        Application.launch(RollingCubesApplication.class, args);
+        Application.launch(StoneInBoxApplication.class, args);
     }
 
 }
